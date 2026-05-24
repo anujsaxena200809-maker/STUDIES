@@ -1,736 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>StudyNest</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-:root{
-  --bg:#08060f;--surface:#0f0b1a;--card:#161028;--card2:#1c1535;
-  --purple:#8b5cf6;--purple-dim:rgba(139,92,246,0.12);--purple-border:rgba(139,92,246,0.3);
-  --pink:#ec4899;--cyan:#06b6d4;--amber:#f59e0b;
-  --green:#10b981;--red:#ef4444;
-  --text:#f0ecff;--muted:rgba(240,236,255,0.45);--faint:rgba(240,236,255,0.05);
-  --border:rgba(139,92,246,0.15);--r:20px;--rs:14px;
-}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% -10%,rgba(139,92,246,0.12) 0%,transparent 50%),radial-gradient(ellipse 60% 40% at 80% 110%,rgba(236,72,153,0.08) 0%,transparent 50%);pointer-events:none;z-index:0;}
-
-/* SPLASH */
-#splash{position:fixed;inset:0;background:var(--bg);z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;animation:splashOut 0.5s ease 2.5s forwards;}
-.sp-icon{font-size:64px;animation:bounce 1s ease infinite;}
-.sp-logo{font-family:'Syne',sans-serif;font-size:38px;font-weight:800;background:linear-gradient(135deg,#a78bfa,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.sp-sub{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:4px;text-transform:uppercase;}
-.sp-subjects{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;justify-content:center;}
-.sp-subject{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:7px 13px;font-size:13px;font-weight:600;}
-.sp-bar{width:140px;height:3px;background:var(--faint);border-radius:2px;margin-top:20px;overflow:hidden;}
-.sp-fill{height:100%;background:linear-gradient(90deg,#8b5cf6,#ec4899);border-radius:2px;width:0;animation:fillBar 1.2s ease 0.5s forwards;}
-
-@keyframes splashOut{to{opacity:0;pointer-events:none;}}
-@keyframes fillBar{to{width:100%;}}
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-@keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
-@keyframes popIn{0%{transform:scale(0);}70%{transform:scale(1.15);}100%{transform:scale(1);}}
-@keyframes fireDance{0%,100%{transform:scale(1) rotate(-3deg);}50%{transform:scale(1.1) rotate(3deg);}}
-
-/* STATUS BAR */
-.status-bar{position:sticky;top:0;z-index:80;background:rgba(8,6,15,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:14px 20px 12px;}
-.brand{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;background:linear-gradient(135deg,#a78bfa,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.streak-pill{display:flex;align-items:center;gap:6px;background:rgba(139,92,246,0.15);border:1px solid var(--purple-border);border-radius:20px;padding:5px 12px;font-size:13px;font-weight:700;color:#c4b5fd;}
-
-/* APP */
-#app{position:relative;z-index:1;padding-bottom:90px;animation:fadeIn 0.4s ease 2.7s both;}
-.tab-content{display:none;}
-.tab-content.active{display:block;animation:slideUp 0.3s ease;}
-
-/* BOTTOM NAV */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(15,11,26,0.96);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:8px 0 20px;}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;transition:transform 0.2s;}
-.nav-item:active{transform:scale(0.9);}
-.nav-icon-wrap{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;transition:all 0.2s;}
-.nav-item.active .nav-icon-wrap{background:rgba(139,92,246,0.2);border:1px solid var(--purple-border);}
-.nav-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;}
-.nav-item.active .nav-lbl{color:#c4b5fd;}
-
-/* SHARED */
-.pad-h{padding:0 20px;}
-.mb-20{margin-bottom:20px;}
-.section-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:14px;}
-.page-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;margin-bottom:4px;}
-.page-title .grad{background:linear-gradient(135deg,#c4b5fd,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.page-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
-.empty-state{display:flex;flex-direction:column;align-items:center;padding:40px 20px;text-align:center;gap:10px;}
-.empty-em{font-size:48px;animation:bounce 2s ease infinite;}
-.empty-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;}
-.empty-sub{font-size:13px;color:var(--muted);line-height:1.6;}
-
-/* BUTTONS */
-.btn-primary{width:100%;padding:16px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;box-shadow:0 4px 16px rgba(124,58,237,0.3);}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,58,237,0.4);}
-.btn-primary:active{transform:scale(0.97);}
-.btn-primary:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
-.btn-add{width:100%;padding:13px;background:var(--faint);border:1px dashed rgba(139,92,246,0.3);border-radius:var(--rs);color:rgba(167,139,250,0.7);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;}
-.btn-add:hover{background:var(--purple-dim);border-color:var(--purple-border);color:#c4b5fd;}
-.btn-add:active{transform:scale(0.97);}
-.icon-btn{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:6px;border-radius:8px;transition:all 0.2s;}
-.icon-btn:hover{background:rgba(239,68,68,0.1);color:var(--red);}
-
-/* DASHBOARD */
-.dash-pad{padding:22px 20px 0;}
-.dash-greeting{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(167,139,250,0.7);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
-.dash-title{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;line-height:1.1;margin-bottom:4px;}
-.dash-title .hi{background:linear-gradient(135deg,#c4b5fd,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.dash-date{font-size:13px;color:var(--muted);margin-bottom:20px;}
-
-/* STREAK BANNER */
-.streak-banner{margin:0 20px 20px;padding:20px;background:linear-gradient(135deg,rgba(124,58,237,0.18),rgba(236,72,153,0.1));border:1px solid var(--purple-border);border-radius:var(--r);display:flex;align-items:center;gap:14px;}
-.streak-fire{font-size:48px;animation:fireDance 1.5s ease infinite;filter:drop-shadow(0 0 10px rgba(245,158,11,0.5));}
-.streak-num{font-family:'Syne',sans-serif;font-size:44px;font-weight:800;background:linear-gradient(135deg,#f59e0b,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
-.streak-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(245,158,11,0.7);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
-.streak-best{font-size:12px;color:var(--muted);margin-top:4px;}
-.streak-right{margin-left:auto;text-align:right;}
-.streak-score-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
-.streak-score{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;background:linear-gradient(135deg,#a78bfa,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-
-/* PROGRESS CARDS */
-.prog-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 20px;margin-bottom:20px;}
-.prog-card{padding:16px;background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--border);border-radius:var(--rs);}
-.pc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-.pc-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;}
-.pc-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
-.pc-num{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:2px;}
-.pc-sub{font-size:11px;color:var(--muted);}
-.pc-bar{height:4px;background:var(--faint);border-radius:2px;margin-top:10px;overflow:hidden;}
-.pc-fill{height:100%;border-radius:2px;transition:width 0.8s ease;}
-
-/* DASH SECTION */
-.dash-section{padding:0 20px;margin-bottom:20px;}
-.dash-sec-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
-.dash-sec-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;}
-.dash-sec-link{font-family:'JetBrains Mono',monospace;font-size:10px;color:#a78bfa;letter-spacing:1px;cursor:pointer;text-transform:uppercase;}
-
-/* HABIT QUICK */
-.habit-quick{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:13px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;cursor:pointer;transition:all 0.2s;}
-.habit-quick:hover{border-color:var(--purple-border);}
-.habit-quick:active{transform:scale(0.98);}
-.habit-quick.done{background:rgba(16,185,129,0.06);border-color:rgba(16,185,129,0.25);}
-.hq-check{width:28px;height:28px;border-radius:8px;border:2px solid rgba(139,92,246,0.35);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all 0.3s;}
-.habit-quick.done .hq-check{background:var(--green);border-color:var(--green);animation:popIn 0.3s ease;}
-.hq-name{font-size:14px;font-weight:600;flex:1;}
-.habit-quick.done .hq-name{text-decoration:line-through;color:var(--muted);}
-.hq-streak{font-family:'JetBrains Mono',monospace;font-size:11px;color:#f59e0b;}
-
-/* QUOTE */
-.quote-wrap{margin:0 20px 24px;padding:18px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);}
-.quote-body{font-style:italic;font-size:15px;line-height:1.65;margin-bottom:8px;}
-.quote-author{font-family:'JetBrains Mono',monospace;font-size:11px;color:#a78bfa;letter-spacing:1px;}
-
-/* STUDY TAB */
-.study-pad{padding:22px 20px 0;}
-.timer-card{margin:0 20px 20px;background:linear-gradient(135deg,rgba(124,58,237,0.18),rgba(168,85,247,0.1));border:1px solid var(--purple-border);border-radius:var(--r);padding:22px;text-align:center;display:none;}
-.timer-card.active{display:block;animation:slideUp 0.3s ease;}
-.timer-subj-name{font-family:'JetBrains Mono',monospace;font-size:11px;color:#c4b5fd;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
-.timer-display{font-family:'JetBrains Mono',monospace;font-size:54px;font-weight:600;letter-spacing:4px;margin-bottom:18px;background:linear-gradient(135deg,#e9d5ff,#f0abfc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.timer-btns{display:flex;gap:10px;justify-content:center;}
-.btn-pause{background:var(--faint);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:11px 20px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;}
-.btn-pause:hover{background:var(--purple-dim);}
-.btn-stop{background:linear-gradient(135deg,#dc2626,#ef4444);border:none;color:#fff;border-radius:12px;padding:11px 24px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 12px rgba(239,68,68,0.3);}
-.btn-stop:hover{transform:translateY(-2px);}
-.btn-stop:active{transform:scale(0.97);}
-
-/* SESSION ITEM */
-.session-item{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;animation:slideUp 0.3s ease;}
-.session-line{width:4px;height:42px;border-radius:2px;flex-shrink:0;}
-.session-info{flex:1;}
-.session-subj{font-size:14px;font-weight:700;}
-.session-note{font-size:12px;color:var(--muted);margin-top:2px;}
-.session-dur{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#a78bfa;}
-
-/* SUBJECT CARD */
-.subject-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:10px;transition:all 0.2s;cursor:pointer;}
-.subject-card:hover{border-color:var(--purple-border);transform:translateX(4px);}
-.subject-card:active{transform:scale(0.98);}
-.subj-icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
-.subj-info{flex:1;}
-.subj-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:2px;}
-.subj-goal{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
-.subj-today{font-size:12px;font-weight:600;margin-top:4px;}
-.subj-bar{height:4px;background:var(--faint);border-radius:2px;margin-top:8px;overflow:hidden;}
-.subj-fill{height:100%;border-radius:2px;transition:width 0.6s ease;}
-
-/* HABITS TAB */
-.habits-pad{padding:22px 20px 0;}
-.ring-banner{margin:0 20px 20px;padding:18px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);display:flex;align-items:center;gap:16px;}
-.ring-svg{width:76px;height:76px;flex-shrink:0;position:relative;}
-.ring-svg svg{transform:rotate(-90deg);}
-.ring-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#c4b5fd;}
-.ring-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;}
-.ring-sub{font-size:13px;color:var(--muted);margin-top:4px;}
-
-/* HABIT ITEM */
-.habit-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px;transition:all 0.3s;}
-.habit-item.done{background:rgba(16,185,129,0.05);border-color:rgba(16,185,129,0.2);}
-.habit-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-.habit-check{width:32px;height:32px;border-radius:9px;border:2px solid rgba(139,92,246,0.4);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;flex-shrink:0;transition:all 0.3s;}
-.habit-item.done .habit-check{background:linear-gradient(135deg,#059669,#10b981);border-color:transparent;animation:popIn 0.35s ease;box-shadow:0 0 12px rgba(16,185,129,0.3);}
-.habit-emoji{font-size:26px;flex-shrink:0;}
-.habit-detail{flex:1;}
-.habit-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;}
-.habit-item.done .habit-name{text-decoration:line-through;color:var(--muted);}
-.habit-streaks{display:flex;align-items:center;gap:8px;margin-top:3px;}
-.h-streak{font-family:'JetBrains Mono',monospace;font-size:12px;color:#f59e0b;font-weight:600;}
-.h-best{font-size:11px;color:var(--muted);}
-
-/* 7-day grid */
-.habit-grid7{display:flex;gap:5px;}
-.g7-day{flex:1;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);transition:all 0.3s;}
-.g7-day.done{background:linear-gradient(135deg,#059669,#10b981);color:#fff;box-shadow:0 0 6px rgba(16,185,129,0.3);}
-.g7-day.today{border:1px solid var(--purple-border);}
-.g7-day.missed{background:var(--faint);}
-
-/* STATS TAB */
-.stats-pad{padding:22px 20px 0;}
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px;}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:18px;text-align:center;}
-.stat-num{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;line-height:1;background:linear-gradient(135deg,#c4b5fd,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.stat-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:6px;}
-
-/* BREAKDOWN */
-.breakdown-item{margin-bottom:14px;}
-.bd-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
-.bd-subj{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;}
-.bd-dot{width:8px;height:8px;border-radius:50%;}
-.bd-hrs{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);}
-.bd-bar{height:7px;background:var(--faint);border-radius:4px;overflow:hidden;}
-.bd-fill{height:100%;border-radius:4px;transition:width 1s ease;}
-
-/* WEEK GRID */
-.week-lbl-row{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px;}
-.week-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);text-align:center;}
-.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
-.week-dot{height:34px;border-radius:9px;background:var(--faint);transition:all 0.4s;}
-.week-dot.full{background:linear-gradient(135deg,#059669,#10b981);box-shadow:0 0 8px rgba(16,185,129,0.2);}
-.week-dot.partial{background:rgba(16,185,129,0.3);}
-
-/* MODALS */
-.modal-ov{position:fixed;inset:0;z-index:160;background:rgba(0,0,0,0.72);backdrop-filter:blur(8px);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;}
-.modal-ov.open{opacity:1;pointer-events:all;}
-.modal-sheet{width:100%;max-width:480px;max-height:92vh;background:linear-gradient(180deg,#1a1232,#0f0b1a);border:1px solid var(--border);border-radius:26px 26px 0 0;overflow-y:auto;scrollbar-width:none;transform:translateY(100%);transition:transform 0.4s cubic-bezier(0.32,0.72,0,1);padding-bottom:28px;}
-.modal-sheet::-webkit-scrollbar{display:none;}
-.modal-ov.open .modal-sheet{transform:translateY(0);}
-.modal-handle{width:40px;height:4px;background:rgba(139,92,246,0.35);border-radius:2px;margin:14px auto 0;}
-.modal-hdr{padding:18px 20px 0;display:flex;justify-content:space-between;align-items:center;}
-.modal-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;}
-.modal-x{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;padding:4px;border-radius:8px;transition:all 0.2s;}
-.modal-x:hover{background:var(--faint);color:var(--text);}
-.modal-body{padding:18px;}
-.m-field{margin-bottom:14px;}
-.m-lbl{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;}
-.m-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:13px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color 0.2s;}
-.m-input:focus{border-color:var(--purple-border);}
-.m-input::placeholder{color:var(--muted);}
-
-/* PICKERS */
-.color-row{display:flex;gap:10px;flex-wrap:wrap;}
-.c-dot{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all 0.2s;position:relative;}
-.c-dot.sel::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;font-weight:700;}
-.c-dot:hover{transform:scale(1.15);}
-.icon-row{display:flex;gap:8px;flex-wrap:wrap;}
-.i-opt{width:40px;height:40px;border-radius:11px;background:var(--faint);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:all 0.2s;}
-.i-opt.sel{background:var(--purple-dim);border-color:var(--purple-border);}
-.i-opt:hover{background:var(--purple-dim);}
-.i-opt:active{transform:scale(0.9);}
-
-/* DURATION BUTTONS */
-.dur-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-.dur-btn{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:11px 4px;text-align:center;cursor:pointer;font-size:13px;font-weight:600;transition:all 0.2s;}
-.dur-btn:hover{border-color:var(--purple-border);}
-.dur-btn.sel{background:var(--purple-dim);border-color:var(--purple-border);color:#c4b5fd;}
-.dur-btn:active{transform:scale(0.94);}
-
-/* SUBJECT SELECT */
-.subj-select{display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto;}
-.ssi{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.2s;}
-.ssi:hover{border-color:var(--purple-border);}
-.ssi.sel{border-color:var(--purple-border);background:var(--purple-dim);}
-.ssi:active{transform:scale(0.97);}
-.ssi-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
-.ssi-name{font-size:14px;font-weight:600;}
-
-/* TOAST */
-.toast{position:fixed;top:78px;left:50%;transform:translateX(-50%) translateY(-16px);background:rgba(22,16,40,0.95);border:1px solid var(--purple-border);border-radius:14px;padding:11px 18px;display:flex;align-items:center;gap:9px;font-size:14px;font-weight:500;z-index:500;opacity:0;transition:all 0.3s;white-space:nowrap;pointer-events:none;box-shadow:0 8px 24px rgba(139,92,246,0.2);}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Anuj's Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f0f1a;
+      color: #fff;
+      min-height: 100vh;
+      padding: 30px 20px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.4rem;
+      color: #aaa;
+      margin-bottom: 30px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #1a1a2e;
+      border-radius: 16px;
+      padding: 28px;
+      border: 1px solid #2a2a4a;
+    }
+    .card h2 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #666;
+      margin-bottom: 12px;
+    }
+    #time {
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -2px;
+    }
+    #date {
+      color: #888;
+      margin-top: 6px;
+      font-size: 0.95rem;
+    }
+    #weather-temp {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #7eb8f7;
+    }
+    #weather-desc {
+      color: #888;
+      margin-top: 6px;
+      text-transform: capitalize;
+    }
+    #countdown-days {
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: #f7a76e;
+    }
+    #countdown-label {
+      color: #888;
+      margin-top: 6px;
+      font-size: 0.9rem;
+    }
+    #quote-text {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: #ccc;
+      font-style: italic;
+    }
+    #quote-author {
+      margin-top: 10px;
+      color: #666;
+      font-size: 0.85rem;
+    }
+    .goals ul {
+      list-style: none;
+      margin-top: 8px;
+    }
+    .goals ul li {
+      padding: 10px 0;
+      border-bottom: 1px solid #2a2a4a;
+      color: #ccc;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .goals ul li::before {
+      content: '→';
+      color: #7eb8f7;
+    }
+    .goals ul li:last-child { border-bottom: none; }
+  </style>
 </head>
 <body>
+  <h1>Anuj's Dashboard · Bangalore</h1>
+  <div class="grid">
 
-<!-- SPLASH -->
-<div id="splash">
-  <div class="sp-icon">📚</div>
-  <div class="sp-logo">StudyNest</div>
-  <div class="sp-sub">Focus · Track · Grow</div>
-  <div class="sp-subjects">
-    <div class="sp-subject">🧮 Maths</div>
-    <div class="sp-subject">🔬 Physics</div>
-    <div class="sp-subject">🧬 Biology</div>
-    <div class="sp-subject">⚗️ Chemistry</div>
-  </div>
-  <div class="sp-bar"><div class="sp-fill"></div></div>
-</div>
+    <!-- Time -->
+    <div class="card">
+      <h2>Time</h2>
+      <div id="time">--:--</div>
+      <div id="date">Loading...</div>
+    </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"><span id="toastIco">✅</span><span id="toastTxt">Done!</span></div>
+    <!-- Weather -->
+    <div class="card">
+      <h2>Weather · Bangalore</h2>
+      <div id="weather-temp">--°C</div>
+      <div id="weather-desc">Fetching...</div>
+    </div>
 
-<!-- STATUS BAR -->
-<div class="status-bar">
-  <div class="brand">StudyNest</div>
-  <div class="streak-pill">🔥 <span id="hdrStreak">0</span> day streak</div>
-</div>
+    <!-- Countdown -->
+    <div class="card">
+      <h2>Countdown</h2>
+      <div id="countdown-days">--</div>
+      <div id="countdown-label">days until BCA begins (Aug 5)</div>
+    </div>
 
-<!-- APP -->
-<div id="app">
+    <!-- Quote -->
+    <div class="card">
+      <h2>Quote of the Day</h2>
+      <div id="quote-text">Loading...</div>
+      <div id="quote-author"></div>
+    </div>
 
-  <!-- DASHBOARD -->
-  <div class="tab-content active" id="tab-dash">
-    <div class="dash-pad">
-      <div class="dash-greeting" id="dashGreet">GOOD MORNING ☀️</div>
-      <div class="dash-title">Time to <span class="hi">focus</span> 🎯</div>
-      <div class="dash-date" id="dashDate"></div>
+    <!-- Goals -->
+    <div class="card goals">
+      <h2>My Goals This Month</h2>
+      <ul>
+        <li>Ship 4 real projects before college</li>
+        <li>Learn HTML, CSS and JavaScript</li>
+        <li>Build something people actually use</li>
+      </ul>
     </div>
-    <div class="streak-banner">
-      <div class="streak-fire">🔥</div>
-      <div>
-        <div class="streak-num" id="streakNum">0</div>
-        <div class="streak-label">Day Streak</div>
-        <div class="streak-best" id="streakBest">Best: 0 days</div>
-      </div>
-      <div class="streak-right">
-        <div class="streak-score-label">Today</div>
-        <div class="streak-score" id="todayScore">0%</div>
-      </div>
-    </div>
-    <div class="prog-cards">
-      <div class="prog-card">
-        <div class="pc-top"><div class="pc-icon" style="background:rgba(139,92,246,0.15)">📖</div><div class="pc-label">Study</div></div>
-        <div class="pc-num" id="pcStudyNum">0m</div>
-        <div class="pc-sub" id="pcStudyGoal">of 0h goal</div>
-        <div class="pc-bar"><div class="pc-fill" id="pcStudyBar" style="width:0%;background:linear-gradient(90deg,#8b5cf6,#a855f7)"></div></div>
-      </div>
-      <div class="prog-card">
-        <div class="pc-top"><div class="pc-icon" style="background:rgba(16,185,129,0.15)">✅</div><div class="pc-label">Habits</div></div>
-        <div class="pc-num" id="pcHabitsNum">0/0</div>
-        <div class="pc-sub">done today</div>
-        <div class="pc-bar"><div class="pc-fill" id="pcHabitsBar" style="width:0%;background:linear-gradient(90deg,#10b981,#059669)"></div></div>
-      </div>
-    </div>
-    <div class="dash-section">
-      <div class="dash-sec-hdr">
-        <div class="dash-sec-title">Today's Habits</div>
-        <div class="dash-sec-link" onclick="switchTab('habits',document.querySelectorAll('.nav-item')[2])">View all →</div>
-      </div>
-      <div id="dashHabits"></div>
-    </div>
-    <div class="quote-wrap">
-      <div class="quote-body" id="quoteText">"The secret of getting ahead is getting started."</div>
-      <div class="quote-author" id="quoteAuthor">— Mark Twain</div>
-    </div>
+
   </div>
 
-  <!-- STUDY -->
-  <div class="tab-content" id="tab-study">
-    <div class="study-pad">
-      <div class="page-title">My <span class="grad">Study</span></div>
-      <div class="page-sub" id="studySubLine">Today: 0 min logged</div>
-    </div>
-    <div class="timer-card" id="timerCard">
-      <div class="timer-subj-name" id="timerSubjName">SELECT SUBJECT</div>
-      <div class="timer-display" id="timerDisp">00:00</div>
-      <div class="timer-btns">
-        <button class="btn-pause" id="pauseBtn" onclick="pauseTimer()">⏸ Pause</button>
-        <button class="btn-stop" onclick="stopTimer()">⏹ Save</button>
-      </div>
-    </div>
-    <div class="pad-h mb-20">
-      <button class="btn-primary" id="startBtn" onclick="openModal('timerMod')">⏱️ Start Study Session</button>
-    </div>
-    <div class="pad-h mb-20">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <div class="section-title" style="margin-bottom:0">Today's Sessions</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#a78bfa;" id="totalTime">0 min</div>
-      </div>
-      <div id="sessionsList"></div>
-    </div>
-    <div class="pad-h mb-20">
-      <div class="section-title">My Subjects</div>
-      <div id="subjectsList"></div>
-      <button class="btn-add" onclick="openModal('subjMod')">+ Add Subject</button>
-    </div>
-  </div>
+  <script>
+    // Clock
+    function updateTime() {
+      const now = new Date();
+      document.getElementById('time').textContent =
+        now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('date').textContent =
+        now.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
 
-  <!-- HABITS -->
-  <div class="tab-content" id="tab-habits">
-    <div class="habits-pad">
-      <div class="page-title">My <span class="grad">Habits</span></div>
-      <div class="page-sub">Build consistency, one day at a time</div>
-    </div>
-    <div class="ring-banner">
-      <div class="ring-svg">
-        <svg width="76" height="76">
-          <circle cx="38" cy="38" r="30" fill="none" stroke="rgba(139,92,246,0.1)" stroke-width="6"/>
-          <circle cx="38" cy="38" r="30" fill="none" stroke="url(#rg)" stroke-width="6"
-            stroke-dasharray="188.5" stroke-dashoffset="188.5" stroke-linecap="round"
-            id="ringCircle" style="transition:stroke-dashoffset 0.8s ease"/>
-          <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#10b981"/></linearGradient></defs>
-        </svg>
-        <div class="ring-pct" id="ringPct">0%</div>
-      </div>
-      <div>
-        <div class="ring-title" id="ringTitle">Let's go! 🚀</div>
-        <div class="ring-sub" id="ringSub">Complete your habits today</div>
-      </div>
-    </div>
-    <div class="pad-h" id="habitsList"></div>
-    <div class="pad-h mb-20">
-      <button class="btn-add" onclick="openModal('habitMod')">+ Add Habit</button>
-    </div>
-  </div>
+    // Countdown to Aug 5, 2026
+    function updateCountdown() {
+      const target = new Date('2026-08-05');
+      const now = new Date();
+      const diff = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+      document.getElementById('countdown-days').textContent = diff > 0 ? diff : 0;
+    }
+    updateCountdown();
 
-  <!-- STATS -->
-  <div class="tab-content" id="tab-stats">
-    <div class="stats-pad">
-      <div class="page-title">My <span class="grad">Stats</span></div>
-      <div class="page-sub" style="margin-bottom:20px">Your progress at a glance</div>
-    </div>
-    <div class="pad-h stats-grid">
-      <div class="stat-card"><div class="stat-num" id="sTotalHrs">0</div><div class="stat-lbl">Total Hours</div></div>
-      <div class="stat-card"><div class="stat-num" id="sBestStreak">0🔥</div><div class="stat-lbl">Best Streak</div></div>
-      <div class="stat-card"><div class="stat-num" id="sSessions">0</div><div class="stat-lbl">Sessions</div></div>
-      <div class="stat-card"><div class="stat-num" id="sHabitsDone">0</div><div class="stat-lbl">Habits Done</div></div>
-    </div>
-    <div class="pad-h mb-20">
-      <div class="section-title">Hours by Subject</div>
-      <div id="breakdownList"></div>
-    </div>
-    <div class="pad-h mb-20">
-      <div class="section-title">This Week</div>
-      <div class="week-lbl-row" id="weekLabels"></div>
-      <div class="week-grid" id="weekGrid"></div>
-    </div>
-  </div>
+    // Weather (Bangalore lat/lon)
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=12.97&longitude=77.59&current_weather=true')
+      .then(r => r.json())
+      .then(data => {
+        const temp = data.current_weather.temperature;
+        const code = data.current_weather.weathercode;
+        const descs = {0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',48:'Foggy',51:'Light drizzle',61:'Light rain',63:'Moderate rain',80:'Rain showers',95:'Thunderstorm'};
+        document.getElementById('weather-temp').textContent = temp + '°C';
+        document.getElementById('weather-desc').textContent = descs[code] || 'Cloudy';
+      })
+      .catch(() => {
+        document.getElementById('weather-desc').textContent = 'Could not fetch weather';
+      });
 
-</div>
-
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-  <div class="nav-item active" onclick="switchTab('dash',this)"><div class="nav-icon-wrap">🏠</div><span class="nav-lbl">Home</span></div>
-  <div class="nav-item" onclick="switchTab('study',this)"><div class="nav-icon-wrap">📖</div><span class="nav-lbl">Study</span></div>
-  <div class="nav-item" onclick="switchTab('habits',this)"><div class="nav-icon-wrap">✅</div><span class="nav-lbl">Habits</span></div>
-  <div class="nav-item" onclick="switchTab('stats',this)"><div class="nav-icon-wrap">📊</div><span class="nav-lbl">Stats</span></div>
-</div>
-
-<!-- ADD SUBJECT MODAL -->
-<div class="modal-ov" id="subjMod" onclick="ovClick(event,'subjMod')">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-hdr"><div class="modal-title">Add Subject</div><button class="modal-x" onclick="closeModal('subjMod')">✕</button></div>
-    <div class="modal-body">
-      <div class="m-field"><div class="m-lbl">Subject Name</div><input class="m-input" id="sName" placeholder="e.g. Mathematics, Physics..."></div>
-      <div class="m-field"><div class="m-lbl">Icon</div><div class="icon-row" id="sIconPick"></div></div>
-      <div class="m-field"><div class="m-lbl">Color</div><div class="color-row" id="sColorPick"></div></div>
-      <div class="m-field"><div class="m-lbl">Daily Goal (hours)</div><input class="m-input" id="sGoal" type="number" min="0.5" max="12" step="0.5" placeholder="e.g. 2"></div>
-      <button class="btn-primary" onclick="addSubject()" style="margin-top:8px">Add Subject 📚</button>
-    </div>
-  </div>
-</div>
-
-<!-- ADD HABIT MODAL -->
-<div class="modal-ov" id="habitMod" onclick="ovClick(event,'habitMod')">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-hdr"><div class="modal-title">Add Habit</div><button class="modal-x" onclick="closeModal('habitMod')">✕</button></div>
-    <div class="modal-body">
-      <div class="m-field"><div class="m-lbl">Habit Name</div><input class="m-input" id="hName" placeholder="e.g. Exercise 30 mins..."></div>
-      <div class="m-field"><div class="m-lbl">Choose Emoji</div><div class="icon-row" id="hEmojiPick"></div></div>
-      <button class="btn-primary" onclick="addHabit()" style="margin-top:8px">Add Habit ✅</button>
-    </div>
-  </div>
-</div>
-
-<!-- TIMER MODAL -->
-<div class="modal-ov" id="timerMod" onclick="ovClick(event,'timerMod')">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-hdr"><div class="modal-title">Study Session</div><button class="modal-x" onclick="closeModal('timerMod')">✕</button></div>
-    <div class="modal-body">
-      <div class="m-field"><div class="m-lbl">Select Subject</div><div class="subj-select" id="timerSubjSel"></div></div>
-      <div class="m-field" style="margin-top:14px">
-        <div class="m-lbl">Duration</div>
-        <div class="dur-row" id="durBtns">
-          <div class="dur-btn" onclick="selDur(this,30)">30 min</div>
-          <div class="dur-btn" onclick="selDur(this,45)">45 min</div>
-          <div class="dur-btn" onclick="selDur(this,60)">1 hour</div>
-          <div class="dur-btn" onclick="selDur(this,90)">1.5 hr</div>
-          <div class="dur-btn" onclick="selDur(this,120)">2 hours</div>
-          <div class="dur-btn sel" onclick="selDur(this,0)">⏱ Timer</div>
-        </div>
-      </div>
-      <div class="m-field"><div class="m-lbl">Note (optional)</div><input class="m-input" id="sessNote" placeholder="What are you studying?"></div>
-      <button class="btn-primary" onclick="startOrLog()">Start Session ▶</button>
-    </div>
-  </div>
-</div>
-
-<script>
-var COLORS=['#8b5cf6','#ec4899','#3b82f6','#10b981','#f59e0b','#ef4444','#06b6d4','#84cc16'];
-var SUBJECT_ICONS=['🧮','🔬','🧬','⚗️','📝','💻','🌍','🎭','📐','🏛️','🎵','⚡'];
-var HABIT_EMOJIS=['🏃','📖','💧','😴','🧘','🍎','✍️','🎯','💪','🚫','☀️','🤸','📵','🧠','🌿','🎹'];
-var QUOTES=[
-  {t:'"The secret of getting ahead is getting started."',a:'Mark Twain'},
-  {t:'"Study hard what interests you in the most undisciplined manner possible."',a:'Richard Feynman'},
-  {t:'"An investment in knowledge pays the best interest."',a:'Benjamin Franklin'},
-  {t:'"The beautiful thing about learning is that no one can take it away from you."',a:'B.B. King'},
-  {t:'"Education is not the filling of a pail, but the lighting of a fire."',a:'W.B. Yeats'},
-  {t:'"Believe you can and you\'re halfway there."',a:'Theodore Roosevelt'},
-  {t:'"It always seems impossible until it\'s done."',a:'Nelson Mandela'},
-  {t:'"Push yourself, because no one else is going to do it for you."',a:'Unknown'}
-];
-var DEFAULT_SUBJECTS=[
-  {id:'s1',name:'Mathematics',icon:'🧮',color:'#8b5cf6',goalHours:2},
-  {id:'s2',name:'Physics',icon:'🔬',color:'#3b82f6',goalHours:1.5},
-  {id:'s3',name:'Biology',icon:'🧬',color:'#10b981',goalHours:1},
-  {id:'s4',name:'Chemistry',icon:'⚗️',color:'#ef4444',goalHours:1}
-];
-var DEFAULT_HABITS=[
-  {id:'h1',name:'Exercise 30 mins',emoji:'🏃',completedDates:[]},
-  {id:'h2',name:'Read 20 pages',emoji:'📖',completedDates:[]},
-  {id:'h3',name:'Drink 8 glasses of water',emoji:'💧',completedDates:[]},
-  {id:'h4',name:'No phone before study',emoji:'📵',completedDates:[]}
-];
-
-var subjects=JSON.parse(localStorage.getItem('sn_subj')||'null')||DEFAULT_SUBJECTS;
-var sessions=JSON.parse(localStorage.getItem('sn_sess')||'[]');
-var habits=JSON.parse(localStorage.getItem('sn_hab')||'null')||DEFAULT_HABITS;
-var selColor=COLORS[0],selIcon=SUBJECT_ICONS[0],selHabitEmoji=HABIT_EMOJIS[0];
-var selTimerSubj=null,selDuration=0;
-var timerRunning=false,timerPaused=false,timerSecs=0,timerInt=null;
-var timerSubjId=null,timerNote='';
-
-function saveAll(){
-  localStorage.setItem('sn_subj',JSON.stringify(subjects));
-  localStorage.setItem('sn_sess',JSON.stringify(sessions));
-  localStorage.setItem('sn_hab',JSON.stringify(habits));
-}
-function gid(){return Date.now().toString(36)+Math.random().toString(36).substr(2,4);}
-function today(){return new Date().toISOString().split('T')[0];}
-function getLast7(){var d=[];for(var i=6;i>=0;i--){var x=new Date();x.setDate(x.getDate()-i);d.push(x.toISOString().split('T')[0]);}return d;}
-function fmtMins(m){if(!m||m===0)return'0m';if(m<60)return m+'m';var h=Math.floor(m/60),r=m%60;return h+'h'+(r?r+'m':'');}
-
-function calcStreak(){
-  var act={};
-  habits.forEach(function(h){(h.completedDates||[]).forEach(function(d){act[d]=true;});});
-  sessions.forEach(function(s){act[s.date]=true;});
-  var t=today(),cur=0,best=0,check=t;
-  while(act[check]){cur++;var d=new Date(check);d.setDate(d.getDate()-1);check=d.toISOString().split('T')[0];}
-  var dates=Object.keys(act).sort(),streak=1;
-  for(var i=1;i<dates.length;i++){var p=new Date(dates[i-1]);p.setDate(p.getDate()+1);if(p.toISOString().split('T')[0]===dates[i])streak++;else streak=1;if(streak>best)best=streak;}
-  if(cur>best)best=cur;
-  return{current:cur,best:best};
-}
-function calcHabitStreak(h){
-  var d=h.completedDates||[];if(!d.length)return{current:0,best:0};
-  var t=today(),cur=0,best=0,check=t;
-  while(d.indexOf(check)>-1){cur++;var x=new Date(check);x.setDate(x.getDate()-1);check=x.toISOString().split('T')[0];}
-  var sorted=d.slice().sort(),s=1;
-  for(var i=1;i<sorted.length;i++){var p=new Date(sorted[i-1]);p.setDate(p.getDate()+1);if(p.toISOString().split('T')[0]===sorted[i])s++;else s=1;if(s>best)best=s;}
-  if(cur>best)best=cur;
-  return{current:cur,best:best};
-}
-function getTodayMins(){return sessions.filter(function(s){return s.date===today();}).reduce(function(a,s){return a+s.minutes;},0);}
-function getTotalGoalHrs(){return subjects.reduce(function(a,s){return a+(s.goalHours||0);},0);}
-function getSubjMins(id){return sessions.filter(function(s){return s.subjectId===id&&s.date===today();}).reduce(function(a,s){return a+s.minutes;},0);}
-
-function renderDash(){
-  var hr=new Date().getHours();
-  document.getElementById('dashGreet').textContent=hr<12?'GOOD MORNING ☀️':hr<17?'GOOD AFTERNOON ✨':'GOOD EVENING 🌙';
-  var now=new Date();
-  document.getElementById('dashDate').textContent=now.toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  var streak=calcStreak();
-  document.getElementById('streakNum').textContent=streak.current;
-  document.getElementById('hdrStreak').textContent=streak.current;
-  document.getElementById('streakBest').textContent='Best: '+streak.best+' days';
-  var todayMins=getTodayMins(),goalMins=getTotalGoalHrs()*60;
-  var studyPct=goalMins>0?Math.min(100,Math.round(todayMins/goalMins*100)):0;
-  document.getElementById('pcStudyNum').textContent=fmtMins(todayMins);
-  document.getElementById('pcStudyGoal').textContent='of '+getTotalGoalHrs()+'h goal';
-  setTimeout(function(){document.getElementById('pcStudyBar').style.width=studyPct+'%';},100);
-  var done=habits.filter(function(h){return(h.completedDates||[]).indexOf(today())>-1;}).length;
-  var total=habits.length;
-  var habitPct=total>0?Math.round(done/total*100):0;
-  document.getElementById('pcHabitsNum').textContent=done+'/'+total;
-  setTimeout(function(){document.getElementById('pcHabitsBar').style.width=habitPct+'%';},100);
-  document.getElementById('todayScore').textContent=Math.round((studyPct+habitPct)/2)+'%';
-  var el=document.getElementById('dashHabits');
-  if(!habits.length){el.innerHTML='<div class="empty-state"><div class="empty-em">🌱</div><div class="empty-title">No habits yet</div><div class="empty-sub">Add habits in the Habits tab</div></div>';return;}
-  el.innerHTML=habits.slice(0,5).map(function(h){
-    var isDone=(h.completedDates||[]).indexOf(today())>-1;
-    var s=calcHabitStreak(h);
-    return'<div class="habit-quick'+(isDone?' done':'')+'" onclick="toggleHabit(\''+h.id+'\')">'
-      +'<div class="hq-check">'+(isDone?'✓':'')+'</div>'
-      +'<div class="hq-name">'+h.emoji+' '+h.name+'</div>'
-      +(s.current>0?'<div class="hq-streak">🔥'+s.current+'d</div>':'')
-      +'</div>';
-  }).join('');
-  var q=QUOTES[new Date().getDay()%QUOTES.length];
-  document.getElementById('quoteText').textContent=q.t;
-  document.getElementById('quoteAuthor').textContent='— '+q.a;
-}
-
-function renderStudy(){
-  var todayMins=getTodayMins();
-  document.getElementById('studySubLine').textContent='Today: '+fmtMins(todayMins)+' logged';
-  document.getElementById('totalTime').textContent=fmtMins(todayMins);
-  document.getElementById('startBtn').disabled=timerRunning;
-  var sl=document.getElementById('sessionsList');
-  var ts=sessions.filter(function(s){return s.date===today();}).slice().reverse();
-  if(!ts.length){sl.innerHTML='<div class="empty-state"><div class="empty-em">⏱️</div><div class="empty-title">No sessions yet</div><div class="empty-sub">Start a session to track your study time</div></div>';}
-  else{sl.innerHTML=ts.map(function(s){var subj=subjects.find(function(x){return x.id===s.subjectId;})||{name:'Unknown',color:'#888',icon:'📚'};return'<div class="session-item"><div class="session-line" style="background:'+subj.color+'"></div><div class="session-info"><div class="session-subj">'+subj.icon+' '+subj.name+'</div>'+(s.note?'<div class="session-note">'+s.note+'</div>':'')+'</div><div class="session-dur">'+fmtMins(s.minutes)+'</div><button class="icon-btn" onclick="delSession(\''+s.id+'\')">🗑️</button></div>';}).join('');}
-  var sl2=document.getElementById('subjectsList');
-  if(!subjects.length){sl2.innerHTML='<div class="empty-state"><div class="empty-em">📚</div><div class="empty-title">No subjects</div><div class="empty-sub">Add subjects below</div></div>';}
-  else{sl2.innerHTML=subjects.map(function(s){var sm=getSubjMins(s.id),gm=(s.goalHours||0)*60,pct=gm>0?Math.min(100,Math.round(sm/gm*100)):0;return'<div class="subject-card"><div class="subj-icon" style="background:'+s.color+'22">'+s.icon+'</div><div class="subj-info"><div class="subj-name">'+s.name+'</div><div class="subj-goal">Goal: '+s.goalHours+'h/day</div><div class="subj-today" style="color:'+s.color+'">Today: '+fmtMins(sm)+'</div><div class="subj-bar"><div class="subj-fill" style="width:'+pct+'%;background:'+s.color+'"></div></div></div><button class="icon-btn" onclick="delSubj(\''+s.id+'\',event)">🗑️</button></div>';}).join('');}
-}
-
-function renderHabits(){
-  var done=habits.filter(function(h){return(h.completedDates||[]).indexOf(today())>-1;}).length;
-  var total=habits.length,pct=total>0?Math.round(done/total*100):0;
-  document.getElementById('ringCircle').style.strokeDashoffset=188.5-(pct/100)*188.5;
-  document.getElementById('ringPct').textContent=pct+'%';
-  var titles=['Let\'s go! 🚀','Keep going! 💪','Great work! ⭐','Almost there! 🔥','Perfect day! 🎉'];
-  var subs=['Complete your habits today','You\'re building momentum!','More than halfway done!','Just a few more!','All habits done! Amazing!'];
-  var idx=Math.min(4,Math.floor(pct/25));
-  document.getElementById('ringTitle').textContent=titles[idx];
-  document.getElementById('ringSub').textContent=subs[idx];
-  var hl=document.getElementById('habitsList');
-  if(!habits.length){hl.innerHTML='<div class="empty-state"><div class="empty-em">🌱</div><div class="empty-title">No habits yet</div><div class="empty-sub">Add your first habit and start building streaks!</div></div>';return;}
-  var last7=getLast7();
-  hl.innerHTML=habits.map(function(h){
-    var isDone=(h.completedDates||[]).indexOf(today())>-1;
-    var s=calcHabitStreak(h);
-    var grid=last7.map(function(d){var dd=(h.completedDates||[]).indexOf(d)>-1;var cls='g7-day'+(dd?' done':'')+(d===today()?' today':(!dd?' missed':''));return'<div class="'+cls+'">'+new Date(d).getDate()+'</div>';}).join('');
-    return'<div class="habit-item'+(isDone?' done':'')+'">'
-      +'<div class="habit-top"><div class="habit-check" onclick="toggleHabit(\''+h.id+'\')">'+(isDone?'✓':'')+'</div>'
-      +'<div class="habit-emoji">'+h.emoji+'</div>'
-      +'<div class="habit-detail"><div class="habit-name">'+h.name+'</div>'
-      +'<div class="habit-streaks">'+(s.current>0?'<span class="h-streak">🔥 '+s.current+' days</span>':'<span style="font-size:11px;color:var(--muted)">Start your streak!</span>')+'<span class="h-best"> · Best: '+s.best+'d</span></div></div>'
-      +'<button class="icon-btn" onclick="delHabit(\''+h.id+'\')">🗑️</button></div>'
-      +'<div class="habit-grid7">'+grid+'</div></div>';
-  }).join('');
-}
-
-function renderStats(){
-  var totalMins=sessions.reduce(function(a,s){return a+s.minutes;},0);
-  document.getElementById('sTotalHrs').textContent=Math.round(totalMins/60*10)/10;
-  var streak=calcStreak();
-  document.getElementById('sBestStreak').textContent=streak.best+'🔥';
-  document.getElementById('sSessions').textContent=sessions.length;
-  var totalDone=habits.reduce(function(a,h){return a+(h.completedDates||[]).length;},0);
-  document.getElementById('sHabitsDone').textContent=totalDone;
-  var bl=document.getElementById('breakdownList');
-  if(!subjects.length){bl.innerHTML='<div style="color:var(--muted);font-size:14px;padding:10px 0">No subjects yet.</div>';return;}
-  var allMins=subjects.map(function(s){return sessions.filter(function(x){return x.subjectId===s.id;}).reduce(function(a,x){return a+x.minutes;},0);});
-  var maxM=Math.max.apply(null,allMins.concat([1]));
-  bl.innerHTML=subjects.map(function(s,i){var m=allMins[i],pct=Math.round(m/maxM*100);return'<div class="breakdown-item"><div class="bd-hdr"><div class="bd-subj"><div class="bd-dot" style="background:'+s.color+'"></div>'+s.icon+' '+s.name+'</div><div class="bd-hrs">'+fmtMins(m)+'</div></div><div class="bd-bar"><div class="bd-fill" style="width:'+pct+'%;background:'+s.color+'"></div></div></div>';}).join('');
-  var last7=getLast7();
-  var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  document.getElementById('weekLabels').innerHTML=last7.map(function(d){return'<div class="week-lbl">'+days[new Date(d).getDay()]+'</div>';}).join('');
-  document.getElementById('weekGrid').innerHTML=last7.map(function(d){var hd=habits.filter(function(h){return(h.completedDates||[]).indexOf(d)>-1;}).length,tot=habits.length,pct=tot>0?hd/tot:0;return'<div class="week-dot'+(pct>=1?' full':pct>0?' partial':'')+'"></div>';}).join('');
-}
-
-// ACTIONS
-function addSubject(){
-  var name=document.getElementById('sName').value.trim();
-  var goal=parseFloat(document.getElementById('sGoal').value)||1;
-  if(!name){showToast('⚠️','Enter subject name');return;}
-  subjects.push({id:gid(),name:name,icon:selIcon,color:selColor,goalHours:goal});
-  saveAll();closeModal('subjMod');
-  document.getElementById('sName').value='';document.getElementById('sGoal').value='';
-  renderStudy();renderDash();showToast('📚','Subject added!');
-}
-function delSubj(id,e){e.stopPropagation();subjects=subjects.filter(function(s){return s.id!==id;});saveAll();renderStudy();renderDash();showToast('🗑️','Subject removed');}
-function addHabit(){
-  var name=document.getElementById('hName').value.trim();
-  if(!name){showToast('⚠️','Enter habit name');return;}
-  habits.push({id:gid(),name:name,emoji:selHabitEmoji,completedDates:[]});
-  saveAll();closeModal('habitMod');document.getElementById('hName').value='';
-  renderHabits();renderDash();showToast('✅','Habit added!');
-}
-function toggleHabit(id){
-  var h=habits.find(function(x){return x.id===id;});if(!h)return;
-  if(!h.completedDates)h.completedDates=[];
-  var idx=h.completedDates.indexOf(today());
-  if(idx>-1){h.completedDates.splice(idx,1);showToast('↩️','Habit unmarked');}
-  else{h.completedDates.push(today());showToast('🔥','Habit done! Great work!');}
-  saveAll();renderHabits();renderDash();
-}
-function delHabit(id){habits=habits.filter(function(h){return h.id!==id;});saveAll();renderHabits();renderDash();showToast('🗑️','Habit removed');}
-function delSession(id){sessions=sessions.filter(function(s){return s.id!==id;});saveAll();renderStudy();renderDash();showToast('🗑️','Session removed');}
-
-function selDur(el,mins){selDuration=mins;document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('sel');});el.classList.add('sel');}
-function startOrLog(){
-  if(!selTimerSubj){showToast('⚠️','Select a subject first');return;}
-  var note=document.getElementById('sessNote').value.trim();
-  if(selDuration===0){closeModal('timerMod');startTimer(selTimerSubj,note);}
-  else{sessions.push({id:gid(),subjectId:selTimerSubj,date:today(),minutes:selDuration,note:note});saveAll();closeModal('timerMod');document.getElementById('sessNote').value='';selTimerSubj=null;selDuration=0;renderStudy();renderDash();showToast('📖',fmtMins(selDuration)+' session logged!');}
-}
-function startTimer(subjId,note){
-  var subj=subjects.find(function(s){return s.id===subjId;});
-  timerRunning=true;timerPaused=false;timerSecs=0;timerSubjId=subjId;timerNote=note||'';
-  document.getElementById('timerCard').classList.add('active');
-  document.getElementById('timerSubjName').textContent=(subj?subj.icon+' '+subj.name:'Subject').toUpperCase();
-  document.getElementById('startBtn').disabled=true;
-  timerInt=setInterval(function(){if(!timerPaused){timerSecs++;var m=Math.floor(timerSecs/60),s=timerSecs%60;document.getElementById('timerDisp').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;}},1000);
-}
-function pauseTimer(){timerPaused=!timerPaused;document.getElementById('pauseBtn').textContent=timerPaused?'▶ Resume':'⏸ Pause';}
-function stopTimer(){
-  clearInterval(timerInt);timerRunning=false;timerPaused=false;
-  var mins=Math.max(1,Math.round(timerSecs/60));
-  sessions.push({id:gid(),subjectId:timerSubjId,date:today(),minutes:mins,note:timerNote});
-  saveAll();document.getElementById('timerCard').classList.remove('active');document.getElementById('timerDisp').textContent='00:00';document.getElementById('startBtn').disabled=false;document.getElementById('pauseBtn').textContent='⏸ Pause';timerSecs=0;
-  renderStudy();renderDash();showToast('🎉',fmtMins(mins)+' session saved!');
-}
-
-function openModal(id){
-  if(id==='subjMod'){document.getElementById('sColorPick').innerHTML=COLORS.map(function(c){return'<div class="c-dot'+(c===selColor?' sel':'')+'" style="background:'+c+'" onclick="pickColor(this,\''+c+'\')"></div>';}).join('');document.getElementById('sIconPick').innerHTML=SUBJECT_ICONS.map(function(ic){return'<div class="i-opt'+(ic===selIcon?' sel':'')+'" onclick="pickIcon(this,\''+ic+'\')">'+ic+'</div>';}).join('');}
-  if(id==='habitMod'){document.getElementById('hEmojiPick').innerHTML=HABIT_EMOJIS.map(function(em){return'<div class="i-opt'+(em===selHabitEmoji?' sel':'')+'" onclick="pickHabitEmoji(this,\''+em+'\')">'+em+'</div>';}).join('');}
-  if(id==='timerMod'){selTimerSubj=null;selDuration=0;document.getElementById('sessNote').value='';document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('sel');});document.getElementById('durBtns').querySelector('.dur-btn:last-child').classList.add('sel');var ss=document.getElementById('timerSubjSel');if(!subjects.length){ss.innerHTML='<div style="color:var(--muted);font-size:14px;padding:12px 0">No subjects! Add one first.</div>';}else{ss.innerHTML=subjects.map(function(s){return'<div class="ssi" onclick="pickTimerSubj(this,\''+s.id+'\')" id="ss_'+s.id+'"><div class="ssi-ico" style="background:'+s.color+'22">'+s.icon+'</div><div class="ssi-name">'+s.name+'</div></div>';}).join('');}}
-  document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';
-}
-function closeModal(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
-function ovClick(e,id){if(e.target===document.getElementById(id))closeModal(id);}
-function pickColor(el,c){selColor=c;document.querySelectorAll('.c-dot').forEach(function(d){d.classList.remove('sel');});el.classList.add('sel');}
-function pickIcon(el,i){selIcon=i;document.querySelectorAll('#sIconPick .i-opt').forEach(function(d){d.classList.remove('sel');});el.classList.add('sel');}
-function pickHabitEmoji(el,e){selHabitEmoji=e;document.querySelectorAll('#hEmojiPick .i-opt').forEach(function(d){d.classList.remove('sel');});el.classList.add('sel');}
-function pickTimerSubj(el,id){selTimerSubj=id;document.querySelectorAll('.ssi').forEach(function(d){d.classList.remove('sel');});el.classList.add('sel');}
-
-function switchTab(name,el){
-  document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active');});
-  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
-  document.getElementById('tab-'+name).classList.add('active');
-  if(el)el.classList.add('active');
-  if(name==='dash')renderDash();
-  if(name==='study')renderStudy();
-  if(name==='habits')renderHabits();
-  if(name==='stats')renderStats();
-  window.scrollTo(0,0);
-}
-
-function showToast(ico,msg){var t=document.getElementById('toast');document.getElementById('toastIco').textContent=ico;document.getElementById('toastTxt').textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},2500);}
-
-window.onload=function(){renderDash();};
-</script>
+    // Quote
+    const quotes = [
+      { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+      { text: "Done is better than perfect.", author: "Sheryl Sandberg" },
+      { text: "Build something people want.", author: "Paul Graham" },
+      { text: "Ships don't sink because of water around them. They sink because of water that gets in them.", author: "Unknown" },
+      { text: "An idiot with a plan can beat a genius without a plan.", author: "Warren Buffett" },
+    ];
+    const q = quotes[Math.floor(Math.random() * quotes.length)];
+    document.getElementById('quote-text').textContent = q.text;
+    document.getElementById('quote-author').textContent = '— ' + q.author;
+  </script>
 </body>
 </html>
